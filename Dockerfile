@@ -18,10 +18,6 @@ ENV OPENSSL_INCLUDE_DIR=/usr/include
 # Build the project
 RUN cargo build --release
 
-RUN ls -alh /usr/src/rqbit/
-RUN ls -alh /usr/src/rqbit/target/
-RUN ls -alh /usr/src/rqbit/target/release/
-
 # Runtime stage with a minimal base image
 FROM alpine:latest
 
@@ -30,9 +26,9 @@ RUN apk --no-cache add ca-certificates libgcc openssl-dev
 # Copy the compiled binary from the builder stage
 COPY --from=builder /usr/src/rqbit/target/release/rqbit /usr/local/bin/rqbit
 
-# Check if binary exists and is executable
-RUN echo "Verifying binary in final image:" && ls -alh /usr/local/bin/rqbit && chmod +x /usr/local/bin/rqbit
+# Make binary executable
+RUN chmod +x /usr/local/bin/rqbit
 
 WORKDIR /usr/local/bin
 
-CMD ["rqbit", "server", "start", "--http-api-listen-addr", "0.0.0.0:3030", "/downloads"]
+CMD ["rqbit", "--http-api-listen-addr", "0.0.0.0:3030", "server", "start", "/downloads"]
