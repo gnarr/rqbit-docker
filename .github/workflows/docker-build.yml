@@ -1,0 +1,49 @@
+name: Build and Publish Docker Image
+
+on:
+  schedule:
+    # Run at midnight every day
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get the latest release tag from rqbit
+        id: latest_release
+        run: |
+          LATEST_RELEASE=$(curl -s https://api.github.com/repos/ikatson/rqbit/releases/latest | jq -r '.tag_name')
+          echo "Latest release is $LATEST_RELEASE"
+          echo "::set-output name=tag::$LATEST_RELEASE"
+
+      - name: Build and push Docker image to Docker Hub and GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/rqbit:${{ steps.latest_release.outputs.tag }}
+            ${{ secrets.DOCKER_USERNAME }}/rqbit:latest
+            ghcr.io/${{ github.repository }}/rqbit:${{ steps.latest_release.outputs.tag }}
+            ghcr.io/${{ github.repository }}/rqbit:latest
