@@ -45,5 +45,5 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/rqbit:${{ steps.latest_release.outputs.tag }}
             ${{ secrets.DOCKER_USERNAME }}/rqbit:latest
-            ghcr.io/${{ github.repository }}/rqbit:${{ steps.latest_release.outputs.tag }}
-            ghcr.io/${{ github.repository }}/rqbit:latest
+            ghcr.io/${{ github.actor }}/rqbit:${{ steps.latest_release.outputs.tag }}
+            ghcr.io/${{ github.actor }}/rqbit:latest
