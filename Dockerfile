@@ -24,7 +24,7 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates libgcc openssl-dev
 
 # Copy the compiled binary from the builder stage
-COPY --from=builder /usr/src/rqbit/target/release/rqbit /usr/local/bin/rqbit
+COPY --from=builder /usr/src/rqbit/target/release-github/rqbit /usr/local/bin/rqbit
 
 # Make binary executable
 RUN chmod +x /usr/local/bin/rqbit
