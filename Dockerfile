@@ -16,7 +16,7 @@ ENV OPENSSL_LIB_DIR=/usr/lib
 ENV OPENSSL_INCLUDE_DIR=/usr/include
     
 # Build the project
-RUN cargo build --release-github
+RUN cargo build --profile release-github
 
 # Runtime stage with a minimal base image
 FROM alpine:latest
